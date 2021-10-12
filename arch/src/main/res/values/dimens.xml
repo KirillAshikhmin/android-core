@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="animated_dot_radius">6dp</dimen>
+    <dimen name="view_radius">6dp</dimen>
+    <dimen name="size0">0dp</dimen>
+    <dimen name="size4">4dp</dimen>
+    <dimen name="size8">8dp</dimen>
+    <dimen name="size12">12dp</dimen>
+    <dimen name="size16">16dp</dimen>
+    <dimen name="size24">24dp</dimen>
+    <dimen name="size32">32dp</dimen>
+    <dimen name="size48">48dp</dimen>
+    <dimen name="size64">64dp</dimen>
+    <dimen name="size92">92dp</dimen>
+    <dimen name="size144">144dp</dimen>
+</resources>

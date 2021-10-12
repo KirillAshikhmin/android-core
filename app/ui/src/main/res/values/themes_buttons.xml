@@ -1,0 +1,64 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.App.Button.Margin" parent="@style/Theme.App.Button">
+        <item name="android:layout_marginStart">@dimen/size16</item>
+        <item name="android:layout_marginTop">@dimen/size16</item>
+        <item name="android:layout_marginEnd">@dimen/size16</item>
+        <item name="android:layout_marginBottom">@dimen/size16</item>
+    </style>
+
+    <style name="Theme.App.Button.Border.Margin" parent="@style/Theme.App.Button.Border">
+        <item name="android:layout_marginStart">@dimen/size16</item>
+        <item name="android:layout_marginTop">@dimen/size16</item>
+        <item name="android:layout_marginEnd">@dimen/size16</item>
+        <item name="android:layout_marginBottom">@dimen/size16</item>
+    </style>
+
+    <style name="Theme.App.Button.Border.Transparent.Margin" parent="@style/Theme.App.Button.Border.Transparent">
+        <item name="android:layout_marginStart">@dimen/size16</item>
+        <item name="android:layout_marginTop">@dimen/size16</item>
+        <item name="android:layout_marginEnd">@dimen/size16</item>
+        <item name="android:layout_marginBottom">@dimen/size16</item>
+    </style>
+
+
+    <style name="Theme.App.Button" parent="@style/Widget.AppCompat.Button">
+        <item name="android:layout_height">@dimen/button_size</item>
+        <item name="android:padding">@dimen/button_padding</item>
+        <item name="android:background">@drawable/button_dark_background</item>
+        <item name="android:textColor">@color/button_text_color_light</item>
+        <item name="android:drawableTint">@color/button_text_color_light</item>
+        <item name="android:elevation">@dimen/button_elevation</item>
+        <item name="android:textAlignment">textStart</item>
+    </style>
+
+    <style name="Theme.App.Button.Border" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:layout_height">@dimen/button_size</item>
+        <item name="android:padding">@dimen/button_padding</item>
+        <item name="android:background">@drawable/button_border_background</item>
+        <item name="android:textColor">@color/button_text_color_dark</item>
+        <item name="android:drawableTint">@color/button_text_color_dark</item>
+        <item name="android:elevation">@dimen/button_elevation</item>
+        <item name="android:textAlignment">textStart</item>
+    </style>
+
+    <style name="Theme.App.Button.Border.Transparent" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:layout_height">@dimen/button_size</item>
+        <item name="android:padding">@dimen/button_padding</item>
+        <item name="android:background">@drawable/button_border_background_transparent</item>
+        <item name="android:textColor">@color/dark</item>
+        <item name="android:drawableTint">@color/dark</item>
+        <item name="android:elevation">@dimen/button_elevation</item>
+        <item name="android:textAlignment">textStart</item>
+    </style>
+
+    <style name="Theme.App.Button.Borderless" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:layout_height">@dimen/button_size</item>
+        <item name="android:padding">@dimen/button_padding</item>
+        <item name="android:textColor">@color/dark</item>
+        <item name="android:drawableTint">@color/dark</item>
+        <item name="android:elevation">@dimen/button_elevation</item>
+        <item name="android:textAlignment">textStart</item>
+    </style>
+
+</resources>

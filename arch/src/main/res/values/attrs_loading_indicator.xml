@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LoadingIndicator">
+        <attr name="animation_duration" format="integer" />
+        <attr name="count" format="integer" />
+        <attr name="alpha" format="float" />
+        <attr name="android:radius" format="dimension" />
+        <attr name="android:color" format="color" />
+    </declare-styleable>
+</resources>
+
