@@ -15,27 +15,42 @@ import kotlin.coroutines.resume
 class DialogConductor(override val propertyHostScope: CoroutineScope) : PropertyHost {
     val showAlert = command<Pair<DialogTypes, Map<String, Any>>>()
 
-    val callbacks = mutableMapOf<UUID, (DialogResult) -> Unit>()
+    private val callbacks = mutableMapOf<UUID, (DialogResult) -> Unit>()
 
     suspend fun alert(
         title: LocalizedString = LocalizedString.empty(),
         description: LocalizedString = LocalizedString.empty(),
         positiveAnswer: LocalizedString = LocalizedString.empty(),
         negativeAnswer: LocalizedString = LocalizedString.empty(),
-        neutralAnswer: LocalizedString = LocalizedString.empty()
-    ) = suspendCancellableCoroutine<DialogResult> { continuation ->
-        alert(title, description, positiveAnswer, negativeAnswer, neutralAnswer) {
-            continuation.resume(it)
+        neutralAnswer: LocalizedString = LocalizedString.empty(),
+        copyable : Boolean = false,
+        cancelable : Boolean = true,
+    ) = suspendCancellableCoroutine<DialogResult> { continuation->
+        alert(title, description, positiveAnswer, negativeAnswer, neutralAnswer, copyable, cancelable) {
+            if (!continuation.isCompleted)
+                continuation.resume(it)
+        }
+    }
+
+    suspend fun date(
+        title: LocalizedString = LocalizedString.empty()
+    ) = suspendCancellableCoroutine<DialogResult> { continuation->
+        date(title) {
+            if (!continuation.isCompleted)
+                continuation.resume(it)
         }
     }
 
     suspend fun sheet(
         title: LocalizedString = LocalizedString.empty(),
         items: List<LocalizedString>,
-        negativeAnswer: LocalizedString = LocalizedString.resource(R.string.cancel)
-    ) = suspendCancellableCoroutine<DialogResult> { continuation ->
-        sheet(title, items, negativeAnswer) {
-            continuation.resume(it)
+        negativeAnswer: LocalizedString = LocalizedString.resource(R.string.cancel),
+        neutralAnswer: LocalizedString = LocalizedString.empty(),
+        cancelable : Boolean = true
+    ) = suspendCancellableCoroutine<DialogResult> { continuation->
+        sheet(title, items, negativeAnswer, neutralAnswer, cancelable) {
+            if (!continuation.isCompleted)
+                continuation.resume(it)
         }
     }
 
@@ -45,10 +60,12 @@ class DialogConductor(override val propertyHostScope: CoroutineScope) : Property
         positiveAnswer: LocalizedString = LocalizedString.empty(),
         negativeAnswer: LocalizedString = LocalizedString.empty(),
         neutralAnswer: LocalizedString = LocalizedString.empty(),
-        hint: LocalizedString = LocalizedString.empty()
-    ) = suspendCancellableCoroutine<DialogResult> { continuation ->
-        text(title, description, positiveAnswer, negativeAnswer, neutralAnswer, hint) {
-            continuation.resume(it)
+        hint: LocalizedString = LocalizedString.empty(),
+        cancelable : Boolean = true
+    ) = suspendCancellableCoroutine<DialogResult> { continuation->
+        text(title, description, positiveAnswer, negativeAnswer, neutralAnswer, hint, cancelable) {
+            if (!continuation.isCompleted)
+                continuation.resume(it)
         }
     }
 
@@ -58,6 +75,8 @@ class DialogConductor(override val propertyHostScope: CoroutineScope) : Property
         positiveAnswer: LocalizedString = LocalizedString.empty(),
         negativeAnswer: LocalizedString = LocalizedString.empty(),
         neutralAnswer: LocalizedString = LocalizedString.empty(),
+        copyable : Boolean = false,
+        cancelable : Boolean = true,
         onResult: (DialogResult) -> Unit,
     ) {
         val map: Map<String, Any> = mapOf(
@@ -65,7 +84,9 @@ class DialogConductor(override val propertyHostScope: CoroutineScope) : Property
             DialogResolver.DESCRIPTION to description,
             DialogResolver.POSITIVE_ANSWER to positiveAnswer,
             DialogResolver.NEGATIVE_ANSWER to negativeAnswer,
-            DialogResolver.NEUTRAL_ANSWER to neutralAnswer
+            DialogResolver.NEUTRAL_ANSWER to neutralAnswer,
+            DialogResolver.COPYABLE to copyable,
+            DialogResolver.CANCELABLE to cancelable
         )
 
         showAlert(Pair(DialogTypes.alert, prepare(map, onResult)))
@@ -75,15 +96,30 @@ class DialogConductor(override val propertyHostScope: CoroutineScope) : Property
         title: LocalizedString = LocalizedString.empty(),
         items: List<LocalizedString>,
         negativeAnswer: LocalizedString = LocalizedString.resource(R.string.cancel),
+        neutralAnswer: LocalizedString = LocalizedString.empty(),
+        cancelable : Boolean = true,
         onResult: (DialogResult) -> Unit
     ) {
         val map: Map<String, Any> =
             mapOf(
                 DialogResolver.TITLE to title,
                 DialogResolver.ARRAY to items,
-                DialogResolver.NEGATIVE_ANSWER to negativeAnswer
+                DialogResolver.NEGATIVE_ANSWER to negativeAnswer,
+                DialogResolver.NEUTRAL_ANSWER to neutralAnswer,
+                DialogResolver.CANCELABLE to cancelable
             )
         showAlert(Pair(DialogTypes.sheet, prepare(map, onResult)))
+    }
+
+    fun date(
+        title: LocalizedString = LocalizedString.empty(),
+        onResult: (DialogResult) -> Unit
+    ) {
+        val map: Map<String, Any> =
+            mapOf(
+                DialogResolver.TITLE to title
+            )
+        showAlert(Pair(DialogTypes.date, prepare(map, onResult)))
     }
 
     fun text(
@@ -93,6 +129,7 @@ class DialogConductor(override val propertyHostScope: CoroutineScope) : Property
         negativeAnswer: LocalizedString = LocalizedString.empty(),
         neutralAnswer: LocalizedString = LocalizedString.empty(),
         hint: LocalizedString = LocalizedString.empty(),
+        cancelable : Boolean = true,
         onResult: (DialogResult) -> Unit
     ) {
         val map: Map<String, Any> = mapOf(
@@ -101,7 +138,8 @@ class DialogConductor(override val propertyHostScope: CoroutineScope) : Property
             DialogResolver.POSITIVE_ANSWER to positiveAnswer,
             DialogResolver.NEGATIVE_ANSWER to negativeAnswer,
             DialogResolver.NEUTRAL_ANSWER to neutralAnswer,
-            DialogResolver.HINT to hint
+            DialogResolver.HINT to hint,
+            DialogResolver.CANCELABLE to cancelable
         )
         showAlert(Pair(DialogTypes.text, prepare(map, onResult)))
     }
@@ -130,7 +168,7 @@ class DialogConductor(override val propertyHostScope: CoroutineScope) : Property
         return newMap
     }
 
-    fun onDialogAction(id: UUID, result: DialogResult) {
+    fun onDialogAction(id : UUID, result : DialogResult) {
         val callback: ((DialogResult) -> Unit)? = callbacks.tryGetValue(id)
         callback?.invoke(result)
     }

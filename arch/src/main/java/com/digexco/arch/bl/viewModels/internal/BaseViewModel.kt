@@ -3,7 +3,6 @@ package com.digexco.arch.bl.viewModels.internal
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.digexco.arch.helpers.reverseCommand
 import com.digexco.arch.ui.dialogs.DialogConductor
 import com.github.terrakok.cicerone.Router
 import com.github.terrakok.cicerone.Screen
@@ -22,8 +21,6 @@ abstract class BaseViewModel : ViewModel(), PropertyHost {
 
     var navigationParams: Map<String, Any> = mapOf()
     var resultKey: String? = null
-
-    val closeCommand = reverseCommand { close() }
 
     val liveDataProperties: MutableMap<String, MutableLiveData<*>> = mutableMapOf()
 
@@ -57,7 +54,7 @@ abstract class BaseViewModel : ViewModel(), PropertyHost {
         }
     }
 
-    open fun reloadData() {
+    fun reloadData() {
         viewModelScope.launch { loadData() }
     }
 
@@ -71,9 +68,10 @@ abstract class BaseViewModel : ViewModel(), PropertyHost {
     }
 
     open fun onResultReceived(result: Map<String, Any>) {
+
     }
 
-    open fun close(): Boolean {
+    open fun close(back: Boolean = false): Boolean {
         router.exit()
         return true
     }

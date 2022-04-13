@@ -1,6 +1,8 @@
 package com.digexco.arch.helpers
 
 import android.view.View
+import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
@@ -23,6 +25,68 @@ fun PropertyObserver.bindEditText(property: KMutableProperty0<String>, editText:
     }
     et.addTextChangedListener {
         property.set(it.toString())
+    }
+}
+
+fun PropertyObserver.bindCheckBox(property: KMutableProperty0<Boolean>, checkBox: CheckBox) {
+    property bind {
+        val current = checkBox.isChecked
+        if (current != it) {
+            checkBox.isChecked = it
+        }
+    }
+    checkBox.setOnCheckedChangeListener { _, isChecked ->
+        property.set(isChecked)
+    }
+}
+
+fun PropertyObserver.bindCommand(
+    commandProperty: KProperty0<CoroutineCommand>,
+    button: Button,
+    bindState: Boolean = false,
+    checkInvoke: () -> Boolean = { true }
+) {
+    val command = commandProperty.get()
+    button.setOnClickListener { if (checkInvoke())command() }
+
+    if (bindState) {
+        command::isCanExecute bind {
+            button.isEnabled = it
+        }
+    }
+}
+
+fun PropertyObserver.bindCommandNonDisabled(
+    commandProperty: KProperty0<CoroutineCommand>,
+    button: Button,
+    bindState: Boolean = false,
+    whenCheckFailed: () -> Unit = { },
+    checkInvoke: () -> Boolean = { true }
+) {
+    val command = commandProperty.get()
+    button.setOnClickListener { if (checkInvoke()) command() else whenCheckFailed() }
+
+    if (bindState) {
+        command::isCanExecute bind {
+            button.isActivated = it
+        }
+    }
+}
+fun PropertyObserver.bindCommandValueNonDisabled(
+    commandProperty: KProperty0<CoroutineCommandValue<String>>,
+    button: Button,
+    getValue: () -> String,
+    bindState: Boolean = false,
+    whenCheckFailed: () -> Unit = { },
+    checkInvoke: () -> Boolean = { true }
+) {
+    val command = commandProperty.get()
+    button.setOnClickListener { if (checkInvoke()) command(getValue()) else whenCheckFailed() }
+
+    if (bindState) {
+        command::isCanExecute bind {
+            button.isActivated = it
+        }
     }
 }
 
@@ -49,5 +113,8 @@ fun PropertyObserver.bindViewVisible(
     }
 }
 
-fun PropertyHost.reverseCommand(action: suspend () -> Unit) =
-    CoroutineCommand(action, this.propertyHostScope)
+fun PropertyHost.reverseCommand(isEnabled: Boolean = true, action: suspend () -> Unit) =
+    CoroutineCommand(action, this.propertyHostScope, isEnabled)
+
+fun <T> PropertyHost.reverseCommandValue(action: suspend (T) -> Unit) =
+    CoroutineCommandValue(action, this.propertyHostScope)

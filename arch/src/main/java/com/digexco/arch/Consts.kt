@@ -15,5 +15,6 @@ enum class DialogTypes {
     text,
     sheet,
     toast,
+    date,
     loading
 }

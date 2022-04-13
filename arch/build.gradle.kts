@@ -1,10 +1,10 @@
+@file:Suppress("DEPRECATION")
+
 plugins {
     id("com.android.library")
     id("kotlin-android")
     id("dagger.hilt.android.plugin")
     kotlin("kapt")
-    //kotlin("plugin.parcelize")
-    //kotlin("plugin.serialization")
 }
 
 android {
@@ -41,6 +41,7 @@ android {
 
 dependencies {
     implementation(project(":common"))
+    implementation(project(":app:ui"))
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.31")
     implementation("androidx.core:core-ktx:1.6.0")
@@ -58,6 +59,7 @@ dependencies {
     implementation("com.github.yandextaxitech:binaryprefs:1.0.1")
 
     implementation("com.google.dagger:hilt-android:2.38.1")
+    implementation("com.google.firebase:firebase-crashlytics-ktx:18.2.9")
     kapt("com.google.dagger:hilt-compiler:2.38.1")
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 
@@ -70,7 +72,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
-/*
-    implementation(platform("com.google.firebase:firebase-bom:28.0.1"))
-    implementation("com.google.firebase:firebase-crashlytics-ktx")*/
+
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
+    implementation("com.faltenreich:skeletonlayout:4.0.0")
 }

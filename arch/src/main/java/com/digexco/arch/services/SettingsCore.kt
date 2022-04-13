@@ -20,10 +20,6 @@ abstract class SettingsCore {
 
     open fun cleanUser() {}
 
-
-    var theme by preferenceObject(-1)
-
-
     fun <T> set(value: T, propertyName: String = "") {
         if (propertyName.isBlank()) return
         addOrUpdateValue(propertyName, value)

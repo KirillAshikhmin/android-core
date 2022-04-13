@@ -13,18 +13,15 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 
-@AndroidEntryPoint
 abstract class BaseActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "MainActivity"
     }
 
-    @Inject
-    lateinit var navigatorHolder: NavigatorHolder
+    abstract var navigatorHolder: NavigatorHolder
 
-    @Inject
-    lateinit var router: Router
+    abstract var router: Router
 
     private lateinit var navigator: AppNavigator
 
@@ -41,7 +38,7 @@ abstract class BaseActivity : AppCompatActivity() {
                     is Back -> "Back"
                     else -> command.toString()
                 }
-             //   hideKeyboard()
+//                hideKeyboard()
                 Logger.i("Navigation", log)
             }
 
@@ -67,13 +64,14 @@ abstract class BaseActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    fun onEndCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState == null)
             navigator.applyCommands(arrayOf(Replace(getInitScreen())))
-
     }
 
     abstract fun getInitScreen(): Screen
-
 
     override fun onBackPressed() {
         val fragment =

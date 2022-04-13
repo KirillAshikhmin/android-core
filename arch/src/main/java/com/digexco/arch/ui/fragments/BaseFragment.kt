@@ -26,7 +26,7 @@ abstract class BaseFragment(@LayoutRes layout: Int) : Fragment(layout), Property
     abstract val binding: ViewBinding
     abstract val vm: BaseViewModel
     override val propertyObserverLifecycleOwner: LifecycleOwner get() = viewLifecycleOwner
-    private  var dialogService : DialogResolver? = null
+    private var dialogService: DialogResolver? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,12 +38,13 @@ abstract class BaseFragment(@LayoutRes layout: Int) : Fragment(layout), Property
         }
         vm.onViewCreated()
         vm.dialog.showAlert bind {
-            if (dialogService==null) dialogService = DialogResolver(requireContext(), childFragmentManager)
+            if (dialogService == null) dialogService =
+                DialogResolver(requireContext(), childFragmentManager)
             dialogService?.show(it.first, it.second)
         }
     }
 
-    override fun onBackPressed(): Boolean = vm.close()
+    override fun onBackPressed(): Boolean = vm.close(true)
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -73,6 +74,5 @@ abstract class BaseFragment(@LayoutRes layout: Int) : Fragment(layout), Property
     fun <T> Flow<T>.onEachInLifecycleScope(action: suspend (T) -> Unit) {
         this.onEachInScope(lifecycleScope, action)
     }
-
 
 }

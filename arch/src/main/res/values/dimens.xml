@@ -13,4 +13,5 @@
     <dimen name="size64">64dp</dimen>
     <dimen name="size92">92dp</dimen>
     <dimen name="size144">144dp</dimen>
+    <dimen name="dialog_corner_radius">144dp</dimen>
 </resources>

@@ -15,14 +15,12 @@ abstract class BaseApplication : Application(), Application.ActivityLifecycleCal
         private const val TAG = "Application"
     }
 
-    private lateinit var fragmentFactory: FragmentFactory
+    lateinit var fragmentFactory: FragmentFactory
 
     override fun onCreate() {
         super.onCreate()
         Logger.setImplementation(LoggerImpl)
-        //FirebaseApp.initializeApp(applicationContext)
-        val mainPackage = packageName.substring(0, packageName.lastIndexOf("."))
-        fragmentFactory = ArchFragmentFactory(classLoader, mainPackage)
+        fragmentFactory = ArchFragmentFactory(classLoader, "${packageName}2")
         registerActivityLifecycleCallbacks(this)
     }
 

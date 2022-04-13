@@ -31,7 +31,6 @@ class LoadingDialogFragment : DialogFragment(R.layout.dialog_loading) {
             return LoadingDialogFragment().apply {
                 isCancelable = false
                 arguments = args
-                setStyle(STYLE_NO_TITLE, R.style.DialogTheme)
                 show(fragmentManager, TAG)
             }
         }
