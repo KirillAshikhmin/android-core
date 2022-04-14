@@ -1,7 +1,6 @@
 package com.digexco.arch.services.logs.timber
 
 import android.util.Log
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import timber.log.Timber
 
 internal class CrashReportingTree : Timber.Tree() {
