@@ -20,7 +20,8 @@ abstract class BaseApplication : Application(), Application.ActivityLifecycleCal
     override fun onCreate() {
         super.onCreate()
         Logger.setImplementation(LoggerImpl)
-        fragmentFactory = ArchFragmentFactory(classLoader, "${packageName}2")
+        val mainPackage = packageName.substring(0, packageName.lastIndexOf("."))
+        fragmentFactory = ArchFragmentFactory(classLoader, mainPackage)
         registerActivityLifecycleCallbacks(this)
     }
 

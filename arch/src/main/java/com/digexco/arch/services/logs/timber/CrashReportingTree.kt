@@ -11,13 +11,13 @@ internal class CrashReportingTree : Timber.Tree() {
             Log.VERBOSE, Log.DEBUG, Log.INFO, Log.WARN -> return
         }
 
-        val t = throwable ?: Exception(message)
-        val crashlytics = FirebaseCrashlytics.getInstance()
-
-        crashlytics.setCustomKey(CRASHLYTICS_KEY_PRIORITY, priority)
-        tag?.let { crashlytics.setCustomKey(CRASHLYTICS_KEY_TAG, it) }
-        crashlytics.setCustomKey(CRASHLYTICS_KEY_MESSAGE, message)
-        crashlytics.recordException(t)
+//        val t = throwable ?: Exception(message)
+//        val crashlytics = FirebaseCrashlytics.getInstance()
+//
+//        crashlytics.setCustomKey(CRASHLYTICS_KEY_PRIORITY, priority)
+//        tag?.let { crashlytics.setCustomKey(CRASHLYTICS_KEY_TAG, it) }
+//        crashlytics.setCustomKey(CRASHLYTICS_KEY_MESSAGE, message)
+//        crashlytics.recordException(t)
     }
 
     companion object {
