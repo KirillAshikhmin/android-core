@@ -11,6 +11,7 @@ import androidx.annotation.AnimRes
 import androidx.annotation.LayoutRes
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.viewbinding.ViewBinding
+import com.digexco.arch.ui.viewState.IStateView
 import com.digexco.arch.ui.viewState.StateVariant
 import com.digexco.arch.ui.viewState.ViewState
 
@@ -38,6 +39,8 @@ class StateContainer @JvmOverloads constructor(
     attrs: AttributeSet? = null,
 ) : ViewFlipper(context, attrs) {
 
+    private var initStateViewMap: Map<StateVariant, ((ViewState, ViewBinding) -> IStateView)?>? = null
+
     var animationFadeId: Animation? = AnimationUtils.loadAnimation(context, android.R.anim.fade_in)
     var animationFadeOut: Animation? =
         AnimationUtils.loadAnimation(context, android.R.anim.fade_out)
@@ -56,6 +59,9 @@ class StateContainer @JvmOverloads constructor(
         outAnimation = animationFadeOut
     }
 
+    operator fun invoke(block: StateContainer.() -> Unit) = run {
+        block()
+    }
 
     data class StatesData(val variableId: Int, val data: Any)
 
@@ -100,6 +106,7 @@ class StateContainer @JvmOverloads constructor(
         if (currentState != state) return
 
         val viewBinding = getStateBinding(property)
+        initStateViewMap?.get(state)?.invoke(viewState, viewBinding)
         beforeStateCreatedCallback?.onBeforeStateCreated(viewState, viewBinding)
         showState(viewBinding, property, oldState)
         stateCreatedCallback?.onStateCreated(viewState, viewBinding)
@@ -116,6 +123,7 @@ class StateContainer @JvmOverloads constructor(
         getStateBindingAsync(property) { viewBinding ->
             if (currentState != state) return@getStateBindingAsync
 
+            initStateViewMap?.get(state)?.invoke(viewState, viewBinding)
             beforeStateCreatedCallback?.onBeforeStateCreated(viewState, viewBinding)
             showState(viewBinding, property, oldState)
             stateCreatedCallback?.onStateCreated(viewState, viewBinding)
@@ -159,6 +167,33 @@ class StateContainer @JvmOverloads constructor(
 
     fun unsubscribeStateAnimationListener() {
         animationListener = null
+    }
+
+    fun initStateView(
+        normal: ((ViewState, ViewBinding) -> IStateView)? = null,
+        error: ((ViewState, ViewBinding) -> IStateView)? = null,
+        loading: ((ViewState, ViewBinding) -> IStateView)? = null,
+        noData: ((ViewState, ViewBinding) -> IStateView)? = null,
+        noInternet: ((ViewState, ViewBinding) -> IStateView)? = null,
+        extra: ((ViewState, ViewBinding) -> IStateView)? = null,
+        empty: ((ViewState, ViewBinding) -> IStateView)? = null,
+        clean: ((ViewState, ViewBinding) -> IStateView)? = null,
+        vararg anotherStateViews : Pair<StateVariant, ((ViewState, ViewBinding) -> IStateView)>
+    ) {
+        val initStateViewMap = mutableMapOf(
+            StateVariant.Loading to loading,
+            StateVariant.Error to error,
+            StateVariant.Normal to normal,
+            StateVariant.NoData to noData,
+            StateVariant.NoInternet to noInternet,
+            StateVariant.Extra to extra,
+            StateVariant.Empty to empty,
+            StateVariant.Clean to clean,
+        )
+        if (anotherStateViews.isNotEmpty())
+            initStateViewMap.putAll(anotherStateViews)
+
+        this.initStateViewMap = initStateViewMap.toMap()
     }
 
     private fun showState(

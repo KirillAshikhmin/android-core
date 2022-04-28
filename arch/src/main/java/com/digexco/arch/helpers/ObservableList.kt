@@ -2,6 +2,7 @@ package com.digexco.arch.helpers
 
 import androidx.lifecycle.LiveData
 import java.io.InvalidObjectException
+import java.util.function.UnaryOperator
 
 class ObservableList<T>(private val wrapped: MutableList<T>) : MutableList<T> by wrapped,
     LiveData<List<T>>() {
@@ -14,6 +15,7 @@ class ObservableList<T>(private val wrapped: MutableList<T>) : MutableList<T> by
     override fun removeAt(index: Int) = actionWithNotifyResult { wrapped.removeAt(index) }
     override fun retainAll(elements: Collection<T>) = actionWithNotifyBoolean { wrapped.retainAll(elements) }
     override fun clear() = actionWithNotify { wrapped.clear() }
+    override fun replaceAll(operator: UnaryOperator<T>) = actionWithNotify { wrapped.replaceAll(operator) }
 
     override fun getValue(): List<T> {
         return this.toList()
@@ -46,7 +48,7 @@ class ObservableList<T>(private val wrapped: MutableList<T>) : MutableList<T> by
         return result
     }
 
-    private fun update() {
+    fun update() {
         super.setValue(this.toList())
     }
 }

@@ -24,7 +24,9 @@ class DialogResolver(private val context: Context, private val fragmentManager: 
         const val HINT = "hint"
         const val LENGTH = "length"
         const val HIDE = "hide"
+        const val COPYABLE = "copyable"
     }
+
 
     private var length = Toast.LENGTH_SHORT
 
@@ -35,7 +37,19 @@ class DialogResolver(private val context: Context, private val fragmentManager: 
             DialogTypes.text -> showTextQuestion(map)
             DialogTypes.loading -> showLoading(map)
             DialogTypes.toast -> showToast(map)
+            DialogTypes.date -> showDate(map)
         }
+    }
+
+    private fun showDate(map: Map<String, Any>) {
+        val id = map[ID].toString()
+        val title = getString(map[TITLE])
+
+        val bundle = bundleOf(
+            ID to id,
+            TITLE to title
+        )
+        DatePickerDialog.show(fragmentManager, bundle)
     }
 
     private fun showLoading(map: Map<String, Any>) {
@@ -62,6 +76,8 @@ class DialogResolver(private val context: Context, private val fragmentManager: 
             val negativeAnswer = getString(data[NEGATIVE_ANSWER])
             val neutralAnswer = getString(data[NEUTRAL_ANSWER])
             val array = getStringArray(data[ARRAY])
+            val copyable = getBoolean(data[COPYABLE])
+            val cancelable = getBoolean(data[CANCELABLE])
 
             val bundle = bundleOf(
                 ID to id,
@@ -70,7 +86,9 @@ class DialogResolver(private val context: Context, private val fragmentManager: 
                 NEGATIVE_ANSWER to negativeAnswer,
                 POSITIVE_ANSWER to positiveAnswer,
                 NEUTRAL_ANSWER to neutralAnswer,
-                ARRAY to array
+                ARRAY to array,
+                COPYABLE to copyable,
+                CANCELABLE to cancelable,
             )
 
             AppDialogFragment.show(fragmentManager, bundle)
@@ -88,6 +106,7 @@ class DialogResolver(private val context: Context, private val fragmentManager: 
             val negativeAnswer = getString(data[NEGATIVE_ANSWER])
             val neutralAnswer = getString(data[NEUTRAL_ANSWER])
             val hint = getString(data[HINT])
+            val cancelable = getBoolean(data[CANCELABLE])
 
             val bundle = bundleOf(
                 ID to id,
@@ -96,7 +115,8 @@ class DialogResolver(private val context: Context, private val fragmentManager: 
                 NEGATIVE_ANSWER to negativeAnswer,
                 POSITIVE_ANSWER to positiveAnswer,
                 NEUTRAL_ANSWER to neutralAnswer,
-                HINT to hint
+                HINT to hint,
+                CANCELABLE to cancelable,
             )
 
             TextDialogFragment.show(fragmentManager, bundle)
@@ -124,11 +144,13 @@ class DialogResolver(private val context: Context, private val fragmentManager: 
                 is Int -> context.resources.getString(data)
                 is String -> data
                 else -> data?.toString() ?: ""
-            }
+            }.trim()
         } catch (e: Exception) {
             String()
         }
     }
+
+    private fun getBoolean(data: Any?) = data as? Boolean ?: false
 
     private fun getStringArray(data: Any?): Array<String>? {
         if (data == null) return null

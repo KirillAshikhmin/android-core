@@ -1,6 +1,6 @@
 plugins {
+    id("java-library")
     id("kotlin")
-    `java-library`
 }
 
 java {
@@ -8,7 +8,8 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.31")
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlin.jdk7)
+    implementation(libs.kotlin.jdk8)
 }

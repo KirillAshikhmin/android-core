@@ -1,12 +1,55 @@
 package com.digexco.arch.helpers
 
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.os.Parcelable
 import android.util.Size
 import android.util.SizeF
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+
+fun wrapToBundle(key: String, value: String): Bundle {
+    val bundle = Bundle()
+    bundle.putString(key, value)
+    return bundle
+}
+
+fun wrapToBundle(key: String, value: Array<out String>): Bundle {
+    val bundle = Bundle()
+    bundle.putStringArray(key, value)
+    return bundle
+}
+
+fun wrapToBundle(key: String, value: Int): Bundle {
+    val bundle = Bundle()
+    bundle.putInt(key, value)
+    return bundle
+}
+
+fun wrapToBundle(key: String, parcelableArrayList: ArrayList<Parcelable>): Bundle {
+    val bundle = Bundle()
+    bundle.putParcelableArrayList(key, parcelableArrayList)
+    return bundle
+}
+
+
+fun Bundle.addToBundle(key: String, value: String): Bundle {
+    this.putString(key, value)
+    return this
+}
+
+fun Bundle.addToBundle(key: String, value: Bundle?): Bundle {
+    if (value != null) this.putBundle(key, value)
+    return this
+}
+
+fun Bundle.addToBundle(key: String, value: Boolean): Bundle {
+    this.putBoolean(key, value)
+    return this
+}
+
 
 fun Bundle.toMap(map: Map<String, Any> = mapOf()): Map<String, Any> {
     val keys = keySet()
@@ -30,6 +73,12 @@ fun <V> Map<String, V>.toBundle(bundle: Bundle = Bundle()): Bundle = bundle.appl
     forEach {
         val k = it.key
         val v = it.value
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            when (v) {
+                is Size -> putSize(k, v) //api 21
+                is SizeF -> putSizeF(k, v) //api 21
+            }
+        }
         when (v) {
             is IBinder -> putBinder(k, v)
             is Bundle -> putBundle(k, v)
@@ -45,8 +94,6 @@ fun <V> Map<String, V>.toBundle(bundle: Bundle = Bundle()): Bundle = bundle.appl
             is java.io.Serializable -> putSerializable(k, v)
             is Short -> putShort(k, v)
             is ShortArray -> putShortArray(k, v)
-            is Size -> putSize(k, v) //api 21
-            is SizeF -> putSizeF(k, v) //api 21
             else -> throw IllegalArgumentException("$v is of a type that is not currently supported")
         }
     }
@@ -75,6 +122,31 @@ fun MutableLiveData<Boolean>.inverse() {
 }
 
 
+
 fun CharSequence?.isNotNullOrEmpty(): Boolean {
     return this != null && this.isNotEmpty()
+}
+
+fun <T, K, R> LiveData<T>.combineWith(
+    liveData: LiveData<K>,
+    block: (T?, K?) -> R
+): LiveData<R> {
+    val result = MediatorLiveData<R>()
+    result.addSource(this) {
+        result.value = block(this.value, liveData.value)
+    }
+    result.addSource(liveData) {
+        result.value = block(this.value, liveData.value)
+    }
+    return result
+}
+
+fun <T, R> LiveData<T>.castTo(
+    block: (T?) -> R
+): LiveData<R> {
+    val result = MediatorLiveData<R>()
+    result.addSource(this) {
+        result.value = block(this.value)
+    }
+    return result
 }

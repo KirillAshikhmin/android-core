@@ -5,7 +5,7 @@ object Logger : ILoggable {
     private var logger: ILoggable? = null
 
     fun setImplementation(logger: ILoggable) {
-        Logger.logger = logger
+        this.logger = logger
     }
 
     override fun d(tag: String, message: String) {
